@@ -2,43 +2,30 @@
 
 void _portosal_wfe(void)
 {
-    //pmu_wfe();
+    pmu_wfe();
 }
 
 void _portosal_keepalive_init(void)
 {
-   rtc_init();
-	
-   wdtdog_init();
-   //wdtdog_enable();
+    pmu_enable();
+ 		rtc_enable();
+    wdtdog_enable();
 }
 
 void _portosal_keepalive_task(osal_size_t parm)
 {
-//  wdtdog_feed();
-}
-
-
-void _portosal_task_hooks(void)
-{
-
+    static uint32_t cnt = 0;
+    if(0 == (cnt++%8))
+       log_d("keepalive_task");
+		wdtdog_feed();
 }
 
 void _portosal_softirq_init(void)
 {
-    //ARM
-    nvic_irq_enable(PendSV_IRQn, 0, 0);
-
-    //RISC-V
-    //NVIC_SetPriority(Software_IRQn, 0);       
-
+		nvic_irq_enable(PendSV_IRQn, 0, 0);
 }
 
 void _portosal_softirq_entry(void)
 {
-    //ARM
-	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
-
-    //RISC-V
-    //NVIC_SetPendingIRQ(Software_IRQn);
+	  SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
